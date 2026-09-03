@@ -1,5 +1,5 @@
 {
-  username = "railgun"; # auto-set with install.sh, live-install.sh, and rebuild scripts.
+  username = "nazmurrakib"; # auto-set with install.sh, live-install.sh, and rebuild scripts.
 
   # Desktop Environment
   desktop = "hyprland"; # hyprland, i3, gnome, plasma6
@@ -12,26 +12,26 @@
   hyprlockWallpaper = "kurzgesagt-galaxies.webp";
 
   # Default Applications
-  terminal = "kitty"; # kitty, alacritty, wezterm
+  terminal = "ghostty"; # kitty, alacritty, wezterm, ghostty
   editor = "nixvim"; # nixvim, vscode, helix, doom-emacs, nvchad, neovim
-  browser = "zen-beta"; # zen-beta, firefox, floorp
+  browser = "vivaldi"; # zen-beta, firefox, floorp, vivaldi
   fileManager = "thunar"; # yazi, lf, thunar
   shell = "zsh"; # bash, zsh
-  games = false; # Enable/Disable gaming module
 
-  # Hardware
+  # Hardware -- ThinkPad T14 Gen 1 AMD. This config was originally tuned for a
+  # different (Intel/Nvidia, desktop) machine; these three were wrong for this
+  # laptop and are now corrected.
   hostname = "nixos";
-  videoDriver = "nvidia"; # nvidia, amdgpu, intel
-  nvidiaChannel = "legacy_580"; # stable, latest, beta, legacy_xxx
-  bluetoothSupport = false; # Whether your motherboard supports bluetooth
-  batterySupport = false; # Whether device has a battery (laptop)
+  videoDriver = "amdgpu"; # nvidia, amdgpu, intel -- integrated Radeon Vega (Renoir), confirmed via lspci
+  bluetoothSupport = true; # confirmed present: rfkill lists hci0
+  batterySupport = true; # it's a laptop
 
   # Localization
-  timezone = "Europe/London";
-  locale = "en_GB.UTF-8";
+  timezone = "Europe/Warsaw";
+  locale = "en_US.UTF-8";
   clock24h = true;
-  kbdLayout = "gb";
-  kbdVariant = "extd";
-  consoleKeymap = "uk";
+  kbdLayout = "us";
+  kbdVariant = "";
+  consoleKeymap = "us";
   capslockAsESC = false;
 }

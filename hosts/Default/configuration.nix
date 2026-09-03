@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ ... }:
 let
   vars = import ./variables.nix;
 in
@@ -29,7 +29,11 @@ in
     # ../../modules/core/jellyfin.nix
     # ../../modules/core/dlna.nix
     # ../../modules/core/flatpak.nix
-    # ../../modules/core/virtualisation.nix
+    ../../modules/core/virtualisation.nix # docker + libvirtd, for linkwarden and dev-container work
+    ../../modules/core/nix-ld.nix # foreign-binary loader, for Orca and similar AppImages
+    ../../modules/core/appimages.nix # binfmt registration so AppImages run by path
+    ../../modules/core/ollama.nix # loopback-only, not exposed off the machine
+    ../../modules/core/claude-code.nix
 
     # Optional
     # ../../modules/hardware/drives # My personal drives
@@ -53,6 +57,5 @@ in
     ../../modules/programs/media/mpv
     ../../modules/programs/misc/tlp
     # ../../modules/programs/misc/lact # GPU fan, clock and power configuration
-  ]
-  ++ lib.optional (vars.games == true) ../../modules/core/games.nix;
+  ];
 }
