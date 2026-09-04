@@ -51,7 +51,7 @@ hl.config({
 				output = "current",
 			},
 
-			sensitivity = 0,
+			sensitivity = -0.4,
 			force_no_accel = true,
 		}
 

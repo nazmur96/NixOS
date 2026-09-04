@@ -12,7 +12,7 @@
   hyprlockWallpaper = "kurzgesagt-galaxies.webp";
 
   # Default Applications
-  terminal = "ghostty"; # kitty, alacritty, wezterm, ghostty
+  terminal = "kitty"; # kitty, alacritty, wezterm, ghostty
   editor = "nixvim"; # nixvim, vscode, helix, doom-emacs, nvchad, neovim
   browser = "vivaldi"; # zen-beta, firefox, floorp, vivaldi
   fileManager = "thunar"; # yazi, lf, thunar
