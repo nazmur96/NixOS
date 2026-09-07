@@ -90,6 +90,7 @@ in
     LC_TELEPHONE = "${locale}";
     LC_TIME = "${locale}";
   };
+  environment.homeBinInPath = true;
   environment.variables = {
     templates = "${self}/dev-shells";
     NIXOS_OZONE_WL = "1";

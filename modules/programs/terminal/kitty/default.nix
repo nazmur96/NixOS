@@ -57,6 +57,14 @@
           "ctrl+shift+left" = "no_op";
           "ctrl+shift+right" = "no_op";
         };
+        extraConfig = ''
+          # Open links on a plain click instead of requiring ctrl+click.
+          # Falls back to normal click/selection behavior when there's no
+          # link under the cursor, and also works inside apps that grab the
+          # mouse (tmux, vim, this CLI's own TUI), which plain ctrl+left
+          # normally skips.
+          mouse_map left click grabbed,ungrabbed mouse_click_url_or_select
+        '';
       };
     })
   ];

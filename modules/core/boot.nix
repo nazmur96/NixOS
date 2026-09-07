@@ -23,6 +23,7 @@
         device = "nodev";
         efiSupport = true;
         useOSProber = true;
+        configurationLimit = 5; # caps NixOS entries shown; GC (nh clean) still owns disk space
         gfxmodeEfi = "2715x1527"; # for 4k: 3840x2160
         gfxmodeBios = "2715x1527"; # for 4k: 3840x2160
         theme = pkgs.stdenv.mkDerivation {

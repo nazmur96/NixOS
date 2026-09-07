@@ -14,31 +14,19 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/90ba5c0e-f64d-4ab9-9675-7376ed06739a";
+    { device = "/dev/nvme0n1p5";
       fsType = "btrfs";
       options = [ "subvol=@root" ];
     };
 
   fileSystems."/nix" =
-    { device = "/dev/disk/by-uuid/90ba5c0e-f64d-4ab9-9675-7376ed06739a";
+    { device = "/dev/nvme0n1p5";
       fsType = "btrfs";
       options = [ "subvol=@nix" ];
     };
 
-  fileSystems."/var/log" =
-    { device = "/dev/disk/by-uuid/90ba5c0e-f64d-4ab9-9675-7376ed06739a";
-      fsType = "btrfs";
-      options = [ "subvol=@log" ];
-    };
-
-  fileSystems."/.snapshots" =
-    { device = "/dev/disk/by-uuid/90ba5c0e-f64d-4ab9-9675-7376ed06739a";
-      fsType = "btrfs";
-      options = [ "subvol=@snapshots" ];
-    };
-
   fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/90ba5c0e-f64d-4ab9-9675-7376ed06739a";
+    { device = "/dev/nvme0n1p5";
       fsType = "btrfs";
       options = [ "subvol=@home" ];
     };
@@ -47,6 +35,18 @@
     { device = "/dev/disk/by-uuid/BFBE-7497";
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
+    };
+
+  fileSystems."/.snapshots" =
+    { device = "/dev/nvme0n1p5";
+      fsType = "btrfs";
+      options = [ "subvol=@snapshots" ];
+    };
+
+  fileSystems."/var/log" =
+    { device = "/dev/nvme0n1p5";
+      fsType = "btrfs";
+      options = [ "subvol=@log" ];
     };
 
   swapDevices = [ ];

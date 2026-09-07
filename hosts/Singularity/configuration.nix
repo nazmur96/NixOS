@@ -42,6 +42,7 @@ in
     ../../modules/programs/cli/tmux
     ../../modules/programs/cli/direnv
     ../../modules/programs/cli/lazygit
+    ../../modules/programs/cli/gh-dash
     ../../modules/programs/cli/cava
     # ../../modules/programs/cli/fastfetch
     ../../modules/programs/cli/btop
