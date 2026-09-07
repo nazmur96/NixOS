@@ -62,9 +62,9 @@ hl.config({
 		return t
 	end)(),
 	general = {
-		gaps_in = 4,
-		gaps_out = 9,
-		border_size = 2,
+		gaps_in = 0,
+		gaps_out = 0,
+		border_size = 0,
 		col = {
 			active_border = {
 				colors = { "rgba(ca9ee6ff)", "rgba(f2d5cfff)" },
@@ -83,7 +83,7 @@ hl.config({
 		shadow = {
 			enabled = false,
 		},
-		rounding = 10,
+		rounding = 0,
 		dim_special = 0.3,
 		blur = {
 			enabled = true,
@@ -144,6 +144,9 @@ hl.config({
 		workspace_back_and_forth = 0,
 		--allow_workspace_cycles=1,
 		--pass_mouse_when_bound=0,
+	},
+	gestures = {
+		workspace_swipe_create_new = false,
 	},
 })
 

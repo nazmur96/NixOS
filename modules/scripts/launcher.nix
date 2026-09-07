@@ -100,6 +100,46 @@ pkgs.writeShellScriptBin "launcher" ''
 
     rofi -show games -modi games -theme "''${rofi_theme}" -theme-str "$r_override"
     ;;
+  homelab)
+    # One place for the things I actually open: services on management-1,
+    # an SSH session, cloud consoles, local apps. Adding an entry is one line.
+    rofi_theme="''${XDG_CONFIG_HOME:-$HOME/.config}/rofi/launchers/type-2/style-2.rasi"
+    r_override="entry{placeholder:'Homelab...';}listview{lines:12;}"
+
+    # label | kind | target
+    #   url = open in the default browser (vivaldi, via xdg-open)
+    #   ssh = open a terminal already connected
+    #   app = run a local program
+    entries() {
+      echo "󰋜  Homepage|url|https://management-1.tail8cb9b0.ts.net:3001"
+      echo "󰌆  Authentik|url|https://management-1.tail8cb9b0.ts.net:9443"
+      echo "  AWS Console (via SSO)|url|https://management-1.tail8cb9b0.ts.net:9443/application/saml/aws/sso/binding/init/"
+      echo "󰒋  ssh management-1|ssh|mgmt"
+      echo "󰖟  Tailscale admin|url|https://login.tailscale.com/admin/machines"
+      echo "󰅟  Hetzner Cloud|url|https://console.hetzner.cloud"
+      echo "  homelab repo|url|https://github.com/nazmur96/homelab"
+      echo "  NixOS repo|url|https://github.com/nazmur96/NixOS"
+      echo "󰃀  Linkwarden|url|https://management-1.tail8cb9b0.ts.net:3002"
+      echo "󰯄  Vaultwarden|url|https://management-1.tail8cb9b0.ts.net:3003"
+      echo "󰠮  Notion|url|https://www.notion.so"
+      echo "󰌾  KeePassXC (break-glass)|app|keepassxc"
+      echo "󰘦  Graphiti MCP|url|https://management-1.tail8cb9b0.ts.net:8443"
+    }
+
+    CHOICE=$(entries | cut -d'|' -f1 |
+      rofi -dmenu -i -theme-str "$r_override" -theme "$rofi_theme")
+    [ -z "$CHOICE" ] && exit 0
+
+    LINE=$(entries | grep -m1 -F "$CHOICE|")
+    KIND=$(echo "$LINE" | cut -d'|' -f2)
+    TARGET=$(echo "$LINE" | cut -d'|' -f3-)
+
+    case "$KIND" in
+      url) setsid xdg-open "$TARGET" >/dev/null 2>&1 & ;;
+      ssh) setsid ${terminal} -e ssh "$TARGET" >/dev/null 2>&1 & ;;
+      app) setsid "$TARGET" >/dev/null 2>&1 & ;;
+    esac
+    ;;
   help | --help | -h)
     echo "Usage: launcher [ACTION]"
     echo "Launch various rofi modes with custom themes and settings."
@@ -112,6 +152,7 @@ pkgs.writeShellScriptBin "launcher" ''
     echo "  wallpaper    Search and set wallpapers"
     echo "  emoji        Search and insert emojis"
     echo "  games        Launch games menu"
+    echo "  homelab      Open homelab services, SSH sessions and consoles"
     echo "  help         Display this help message"
     echo "  --help       Same as 'help'"
     echo ""

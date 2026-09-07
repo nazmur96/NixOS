@@ -51,6 +51,7 @@ hl.window_rule({
 hl.window_rule({
 	match = { class = "^(gcr-prompter)$" },
 	opacity = "0.90 0.80",
+	float = true,
 })
 hl.window_rule({
 	match = { title = "^(Hyprland Polkit Agent)$" },
@@ -92,6 +93,7 @@ hl.window_rule({
 hl.window_rule({
 	match = { class = "^(gnome-disks)$" },
 	opacity = "0.80 0.70",
+	float = true,
 })
 hl.window_rule({
 	match = { class = "^(org.gnome.Nautilus|[Tt]hunar|pcmanfm)$" },
@@ -104,10 +106,12 @@ hl.window_rule({
 hl.window_rule({
 	match = { class = "^(file-roller|org.gnome.FileRoller)$" },
 	opacity = "0.80 0.70",
+	float = true,
 })
 hl.window_rule({
 	match = { class = "^(io.github.ilya_zlobintsev.LACT)$" },
 	opacity = "0.80 0.70",
+	float = true,
 })
 hl.window_rule({
 	match = { class = "^([Ss]team|steamwebhelper)$" },
@@ -120,6 +124,7 @@ hl.window_rule({
 hl.window_rule({
 	match = { title = "^(Kvantum Manager)$" },
 	opacity = "0.80 0.70",
+	float = true,
 })
 hl.window_rule({
 	match = { class = "^(VSCodium|codium-url-handler)$" },
@@ -167,6 +172,7 @@ hl.window_rule({
 hl.window_rule({
 	match = { class = "^(com.github.tchx84.Flatseal)$" },
 	opacity = "0.80 0.70",
+	float = true,
 })
 hl.window_rule({
 	match = { class = "^(hu.kramo.Cartridges)$" },

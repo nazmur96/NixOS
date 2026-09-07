@@ -28,6 +28,9 @@ hl.bind("xf86AudioNext", hl.dsp.exec_cmd("playerctl next")) -- go to next media
 hl.bind("xf86AudioPrev", hl.dsp.exec_cmd("playerctl previous")) -- go to previous media
 -- hl.bind("xf86AudioNext", hl.dsp.exec_cmd(mediactrl .. "next")) -- go to next media
 -- hl.bind("xf86AudioPrev", hl.dsp.exec_cmd(mediactrl .. "previous")) -- go to previous media
+
+-- Toggle the top bar (hidden by default, mainMod + B shows/hides it)
+hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(barToggle))
 -- hl.bind("XF86AudioPlay", hl.dsp.exec_cmd(mediactrl .. "play-pause")) -- go to next media
 -- hl.bind("XF86AudioPause", hl.dsp.exec_cmd(mediactrl .. "play-pause")) -- go to next media
 
@@ -81,6 +84,7 @@ hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd(launcher .. " wallpaper")) --
 hl.bind(mainMod .. " + Z", hl.dsp.exec_cmd(launcher .. " emoji")) -- launch emoji picker
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd(launcher .. " tmux")) -- launch tmux sessions
 hl.bind(mainMod .. " + G", hl.dsp.exec_cmd(launcher .. " games")) -- game launcher
+hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(launcher .. " homelab")) -- homelab services, ssh and consoles
 -- hl.bind(mainMod .. " + tab", hl.dsp.exec_cmd(launcher .. " window")) # switch between desktop applications
 -- hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(launcher .. " file")) # brrwse system files
 hl.bind(mainMod .. " + ALT + K", hl.dsp.exec_cmd(keyboardswitch)) -- change keyboard layout

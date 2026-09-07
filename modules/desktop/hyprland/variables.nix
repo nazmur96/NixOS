@@ -19,6 +19,7 @@ let
 
   # Import script modules
   # autowaybar = pkgs.callPackage ./scripts/autowaybar.nix { };
+  waybar-toggle = pkgs.callPackage ./scripts/waybar-toggle.nix { };
   autoclicker = pkgs.callPackage ./scripts/autoclicker.nix { };
   batterynotify = pkgs.callPackage ./scripts/batterynotify.nix { };
   clipmanager = pkgs.callPackage ./scripts/clipmanager.nix { };
@@ -58,7 +59,8 @@ in
 
             mainMod = "SUPER"
             launcher = "${getExe launcher}"
-            bar = "${if bar == "wayle" then "wayle shell" else bar}"
+            bar = "${if bar == "wayle" then "wayle shell" else if bar == "waybar" then "true" else bar}"
+            barToggle = "${getExe waybar-toggle}"
             term = "${terminal}"
             editor = "code --disable-gpu"
             browser = "${browser}"
