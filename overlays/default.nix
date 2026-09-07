@@ -12,6 +12,9 @@ in
     };
 
   # https://wiki.nixos.org/wiki/Overlays
+  # pkgs.vscode-marketplace.<publisher>.<name> and pkgs.open-vsx.<...>
+  vscode-marketplace = inputs.nix-vscode-extensions.overlays.default;
+
   modifications = final: prev: {
     nur = inputs.nur.overlays.default;
     stable = import inputs.nixpkgs-stable {

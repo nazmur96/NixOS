@@ -68,6 +68,13 @@
         home-manager.follows = "home-manager";
       };
     };
+    # Mirrors the whole VS Code marketplace + Open VSX as a nix overlay, so any
+    # extension can be declared here rather than installed by hand. nixpkgs only
+    # carries a subset -- the Vesper theme and Symbols icons are not in it.
+    nix-vscode-extensions = {
+      url = "github:nix-community/nix-vscode-extensions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nvchad4nix = {
       url = "github:nix-community/nix4nvchad";
       inputs.nixpkgs.follows = "nixpkgs";

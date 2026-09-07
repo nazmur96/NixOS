@@ -4,8 +4,72 @@
   ...
 }:
 {
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "vscode" ];
+  # copilot + copilot-chat are unfree; they carry the native chat, agent mode
+  # and BYOK model management.
+  nixpkgs.config.allowUnfreePredicate =
+    pkg:
+    builtins.elem (lib.getName pkg) [
+      "vscode"
+      "vscode-extension-github-copilot"
+      "vscode-extension-github-copilot-chat"
+    ];
   home-manager.sharedModules = [
+    (
+      { lib, ... }:
+      {
+        # Home-manager normally symlinks settings.json into the read-only nix
+        # store, so VS Code cannot save anything you change in the UI -- it
+        # fails with EROFS. That is correct for settled config and painful
+        # while still tuning.
+        #
+        # This replaces the symlink with a WRITABLE COPY after activation, so
+        # the UI works. The flake still wins: every `nixos-rebuild switch`
+        # overwrites the copy with whatever is declared here, so experiments
+        # are explicitly temporary and cannot silently become permanent.
+        # Anything worth keeping has to be written into this file.
+        #
+        # The first hook is required: home-manager refuses to link over an
+        # unmanaged regular file, so last rebuild's copy must go first.
+        home.activation = {
+          vscodeUnpinSettings = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
+            for f in settings.json keybindings.json mcp.json; do
+              p="$HOME/.config/Code/User/$f"
+              [ -f "$p" ] && [ ! -L "$p" ] && rm -f "$p"
+            done
+            true
+          '';
+
+          vscodeMutableSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+            for f in settings.json keybindings.json mcp.json; do
+              p="$HOME/.config/Code/User/$f"
+              if [ -L "$p" ]; then
+                t="$(readlink -f "$p")"
+                rm -f "$p"
+                install -m 0644 "$t" "$p"
+              fi
+            done
+          '';
+        };
+      }
+    )
+    (_: {
+      # VS Code reads MCP servers from ~/.config/Code/User/mcp.json. The
+      # settings.json flag chat.mcp.discovery.enabled only turns the feature
+      # on -- without this file there is nothing for it to discover.
+      #
+      # This is the same graphiti server Claude Code uses (see ~/.claude.json),
+      # running on management-1 and reachable only over the tailnet. Pointing
+      # the editor at it means the in-editor agent shares one knowledge graph
+      # with the CLI agent instead of keeping a separate memory.
+      xdg.configFile."Code/User/mcp.json".text = builtins.toJSON {
+        servers = {
+          agent-brain = {
+            type = "http";
+            url = "https://management-1.tail8cb9b0.ts.net:8443/mcp";
+          };
+        };
+      };
+    })
     (_: {
       programs.vscode = {
         enable = true;
@@ -13,31 +77,58 @@
         # package = pkgs.vscodium;
         package = pkgs.vscode;
         profiles.default = {
-          extensions = with pkgs.vscode-extensions; [
-            bbenoist.nix
-            arrterian.nix-env-selector
-            eamodio.gitlens
-            github.vscode-github-actions
-            yzhang.markdown-all-in-one
-            catppuccin.catppuccin-vsc
-            catppuccin.catppuccin-vsc-icons
-            # asvetliakov.vscode-neovim
-            # vscodevim.vim
-            # tamasfe.even-better-toml
-            jnoortheen.nix-ide
-            # redhat.vscode-yaml
-            # vadimcn.vscode-lldb
-            # rust-lang.rust-analyzer
-            # ms-vscode.cpptools
-            # ms-vscode.cmake-tools
-            # ms-vscode.makefile-tools
-            # ziglang.vscode-zig
-            # ms-dotnettools.csharp
-            # ms-python.python
-            # pkief.material-icon-theme
-            # equinusocio.vsc-material-theme
-            # dracula-theme.theme-dracula
-          ];
+          extensions =
+            (with pkgs.vscode-extensions; [
+              bbenoist.nix
+              arrterian.nix-env-selector
+              eamodio.gitlens
+              github.vscode-github-actions
+
+              # Native chat, agent mode, MCP and BYOK live behind these. "BYOK" means
+              # your own API key instead of Copilot's model quota -- it does NOT remove
+              # the GitHub sign-in requirement. Keys are entered in the UI and stored
+              # in gnome-keyring, never in this file.
+              github.copilot
+              github.copilot-chat
+
+              # From the video, host side only. Anything needing a language server
+              # (prettier, tailwind, mdx, pretty-ts-errors, import-cost) belongs in
+              # devcontainer.json instead -- on the host it would run against a
+              # toolchain that by rule 1 is not installed here.
+              alefragnani.project-manager
+              alefragnani.bookmarks
+              aaron-bond.better-comments
+              streetsidesoftware.code-spell-checker
+              usernamehw.errorlens
+              github.vscode-pull-request-github
+              # The client half of the editor split: attach to a DevPod container
+              # or management-1 and run the language servers over there.
+              ms-vscode-remote.remote-ssh
+              yzhang.markdown-all-in-one
+              catppuccin.catppuccin-vsc
+              catppuccin.catppuccin-vsc-icons
+              # asvetliakov.vscode-neovim
+              # vscodevim.vim
+              # tamasfe.even-better-toml
+              jnoortheen.nix-ide
+              # redhat.vscode-yaml
+              # vadimcn.vscode-lldb
+              # rust-lang.rust-analyzer
+              # ms-vscode.cpptools
+              # ms-vscode.cmake-tools
+              # ms-vscode.makefile-tools
+              # ziglang.vscode-zig
+              # ms-dotnettools.csharp
+              # ms-python.python
+              # pkief.material-icon-theme
+              # equinusocio.vsc-material-theme
+              # dracula-theme.theme-dracula
+            ])
+            # Not in nixpkgs -- these come from the marketplace overlay.
+            ++ (with pkgs.vscode-marketplace; [
+              raunofreiberg.vesper
+              miguelsolorio.symbols
+            ]);
           keybindings = [
             {
               key = "ctrl+q";
@@ -48,16 +139,28 @@
               key = "ctrl+s";
               command = "workbench.action.files.saveFiles";
             }
+            # Cursor-style AI bindings: ctrl+k inline edit, ctrl+l chat.
+            {
+              key = "ctrl+k";
+              command = "inlineChat.start";
+              when = "editorFocus";
+            }
+            {
+              key = "ctrl+l";
+              command = "workbench.action.chat.open";
+            }
           ];
           userSettings = {
             "update.mode" = "none";
             # "extensions.autoUpdate" = false; # Fixes vscode freaking out when theres an update
             "window.titleBarStyle" = "custom"; # needed otherwise vscode crashes, see https://github.com/NixOS/nixpkgs/issues/246509
-            "window.menuBarVisibility" = "classic";
+            # Compact hamburger menu rather than a full menu bar -- closer to Cursor's
+            # cleaner title bar. Revert to "classic" if you want the menus back.
+            "window.menuBarVisibility" = "compact";
             # "window.zoomLevel" = 0.5;
-            "editor.fontSize" = 16;
-            "workbench.colorTheme" = "Catppuccin Mocha";
-            "workbench.iconTheme" = "catppuccin-mocha";
+            "editor.fontSize" = 15;
+            "workbench.colorTheme" = "Vesper";
+            "workbench.iconTheme" = "symbols";
             "catppuccin.accentColor" = "mauve";
             "vsicons.dontShowNewVersionMessage" = true;
             "explorer.confirmDragAndDrop" = false;
@@ -87,8 +190,22 @@
             # "editor.formatOnType" = true;
             "editor.formatOnPaste" = true;
 
-            "editor.minimap.enabled" = false;
+            # Minimap on: it doubles as a scrollbar preview for long files.
+            "editor.minimap.enabled" = true;
+            # Cursor layout: files stay on the LEFT (same as stock VS Code). Cursor's
+            # actual difference is the activity bar sitting horizontally ABOVE the
+            # explorer rather than as a tall vertical strip. The AI chat is what
+            # lives on the right, in the secondary sidebar.
             "workbench.sideBar.location" = "left";
+            "workbench.activityBar.orientation" = "horizontal";
+            "editor.wordWrap" = "on";
+            "editor.cursorSmoothCaretAnimation" = "on";
+            "editor.cursorBlinking" = "phase";
+            # Cursor keeps files on the left and chat on the right. VS Code puts
+            # chat in the secondary sidebar, which reproduces that split.
+            "workbench.secondarySideBar.defaultVisibility" = "visible";
+            "chat.agent.enabled" = true;
+            "chat.mcp.discovery.enabled" = true;
             # "workbench.activityBar.location" = "hidden";
             # "workbench.editor.showTabs" = "single";
             # "workbench.statusBar.visible" = false;
@@ -97,7 +214,7 @@
             "workbench.editor.limit.value" = 10;
             "workbench.editor.limit.perEditorGroup" = true;
             "explorer.openEditors.visible" = 0;
-            "breadcrumbs.enabled" = true;
+            "breadcrumbs.enabled" = false;
             "editor.renderControlCharacters" = false;
             "editor.stickyScroll.enabled" = false; # Top code preview
             "editor.scrollbar.verticalScrollbarSize" = 2;
@@ -107,6 +224,12 @@
             "workbench.layoutControl.enabled" = false;
 
             "editor.mouseWheelZoom" = true;
+
+            # Orca keeps long terminal history; VS Code defaults to 1000 lines.
+            "terminal.integrated.scrollback" = 20000;
+            "terminal.integrated.enablePersistentSessions" = true;
+            # Stop the italic "preview" tab replacing itself as you click around.
+            "workbench.editor.enablePreview" = false;
 
             "C_Cpp.autocompleteAddParentheses" = true;
             "C_Cpp.formatting" = "vcFormat";
@@ -124,7 +247,7 @@
             "C_Cpp.intelliSenseCacheSize" = 2048;
             "C_Cpp.intelliSenseMemoryLimit" = 2048;
             "C_Cpp.default.browse.path" = [
-              ''''${workspaceFolder}/**''
+              "\${workspaceFolder}/**"
             ];
             "C_Cpp.default.cStandard" = "gnu11";
             "C_Cpp.inlayHints.parameterNames.hideLeadingUnderscores" = false;
