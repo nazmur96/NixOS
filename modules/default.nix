@@ -37,6 +37,7 @@ in
     ./programs/cli/tmux
     ./programs/cli/direnv
     ./programs/cli/lazygit
+    ./programs/cli/gh-dash
     ./programs/cli/cava
     ./programs/cli/btop
     ./programs/media/discord
