@@ -17,6 +17,7 @@ in
     ../../modules/core/hardware.nix
     ../../modules/core/network.nix
     ../../modules/core/dns.nix
+    ../../modules/core/tailscale.nix # private network; stable names via MagicDNS, TLS without a domain
     ../../modules/core/nh.nix
     ../../modules/core/packages.nix
     ../../modules/core/printing.nix
@@ -29,7 +30,9 @@ in
     # ../../modules/core/jellyfin.nix
     # ../../modules/core/dlna.nix
     # ../../modules/core/flatpak.nix
-    ../../modules/core/virtualisation.nix # docker + libvirtd, for linkwarden and dev-container work
+    ../../modules/core/virtualisation.nix # docker + rootless podman + libvirtd
+    ../../modules/core/devpod.nix # dev-environment orchestration, drives podman
+    ../../modules/core/mise.nix # non-Nix toolchain manager, kept for portable skills
     ../../modules/core/nix-ld.nix # foreign-binary loader, for Orca and similar AppImages
     ../../modules/core/appimages.nix # binfmt registration so AppImages run by path
     ../../modules/core/ollama.nix # loopback-only, not exposed off the machine
@@ -41,11 +44,18 @@ in
     ../../modules/desktop/${vars.desktop}
     ../../modules/programs/browser/${vars.browser}
     ../../modules/programs/terminal/${vars.terminal}
-    ../../modules/programs/editor/${vars.editor}
+    ../../modules/programs/editor/${vars.editor} # terminal editor; also sets $EDITOR (see modules/core/users.nix)
+    ../../modules/programs/editor/vscode # GUI editor. Imported explicitly, NOT via vars.editor, because
+    # setting vars.editor = "vscode" would make $EDITOR="code" -- and `code`
+    # returns immediately without --wait, so git would see an empty commit
+    # message every time. Terminal editing stays nvim; VS Code is the GUI and
+    # the client half of the DevPod/Remote-SSH split (UI here, LSPs in the
+    # container).
     ../../modules/programs/file-manager/${vars.fileManager}
     ../../modules/programs/cli/tmux
     ../../modules/programs/cli/direnv
     ../../modules/programs/cli/lazygit
+    ../../modules/programs/cli/gh-dash
     ../../modules/programs/cli/btop
     # ../../modules/programs/cli/cava
     # ../../modules/programs/cli/fastfetch

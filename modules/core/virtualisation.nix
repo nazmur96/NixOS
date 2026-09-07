@@ -1,14 +1,43 @@
-{ pkgs, lib, ... }:
 {
-  # Only enable either docker or podman -- Not both
+  pkgs,
+  lib,
+  host,
+  ...
+}:
+let
+  inherit (import ../../hosts/${host}/variables.nix) username;
+in
+{
+  # Docker and Podman run side by side on purpose. Docker keeps the existing
+  # compose stacks (linkwarden, agent-brain, KiroCrew) working untouched while
+  # Podman takes new dev-container work rootlessly. This is a MIGRATION STATE,
+  # not the destination: the blueprint gives the container-runtime layer to
+  # Podman alone. When the last compose stack has moved over, set
+  # docker.enable = false and podman.dockerCompat = true -- `docker` then
+  # aliases to rootless Podman, so existing habits and compose files still work.
+  #
+  # The upstream "only one or the other" comment was imprecise. NixOS asserts
+  # exactly two overlaps (nixos/modules/virtualisation/podman/default.nix):
+  #   dockerCompat        -> !docker.enable   (both would own the `docker` command)
+  #   dockerSocket.enable -> !docker.enable   (only one can serve the socket)
+  # Running both engines is otherwise supported.
   virtualisation = {
     spiceUSBRedirection.enable = true;
+
+    # Writes /etc/containers/{policy.json,registries.conf,storage.conf}.
+    # Podman refuses to pull an image without policy.json, and podman.enable
+    # does NOT imply this option -- verified against the module source.
+    containers.enable = true;
 
     docker = {
       enable = true;
     };
 
-    podman.enable = false;
+    podman = {
+      enable = true;
+      dockerCompat = false; # asserted against docker.enable, see above
+      dockerSocket.enable = false; # ditto
+    };
 
     libvirtd = {
       enable = true;
@@ -80,5 +109,17 @@
 
     lazydocker
     docker-client
+
+    # Podman-side equivalents. podman-compose reads the same compose files
+    # Docker does, which is what makes a stack-by-stack migration possible.
+    podman-compose
+    podman-tui
   ];
+
+  # Rootless Podman maps container UIDs into a subordinate range on the host;
+  # without entries in /etc/sub{u,g}id rootless containers fail to start.
+  # autoSubUidGidRange defaults to false and neither the podman nor the
+  # containers module sets it (only incus.nix does), so it is declared here,
+  # next to the thing that needs it.
+  users.users.${username}.autoSubUidGidRange = true;
 }

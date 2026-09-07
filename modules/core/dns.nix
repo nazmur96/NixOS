@@ -108,7 +108,15 @@
           anonymize_client_ip = true;
           bind_host = "0.0.0.0";
           bind_port = 53;
-          upstream_dns = [ "127.0.0.1:5335" ];
+          upstream_dns = [
+            "127.0.0.1:5335"
+            # Split-DNS for MagicDNS: *.ts.net goes to Tailscale's resolver,
+            # everything else keeps going to Unbound -> DoT. This is what lets
+            # AdGuard stay the single owner of DNS on this host, so tailscaled
+            # can be joined with --accept-dns=false and never touch resolv.conf.
+            # Inert until this machine has actually joined a tailnet.
+            "[/ts.net/]100.100.100.100"
+          ];
           bootstrap_dns = [ "127.0.0.1:5335" ];
         };
         filtering = {
