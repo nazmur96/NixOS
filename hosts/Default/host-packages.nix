@@ -10,6 +10,8 @@
     # back on, so a broken entry must be fixable from a rescue shell -- which
     # means the tool has to be installed already, not fetched later.
     efibootmgr
+    herdr # Terminal workspace/session multiplexer for AI coding agents
+    pi-coding-agent # Earendil's "pi" AI coding agent CLI
     # obsidian
     # ludusavi
     # godot
