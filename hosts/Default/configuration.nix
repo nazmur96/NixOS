@@ -32,6 +32,7 @@ in
     # ../../modules/core/flatpak.nix
     ../../modules/core/virtualisation.nix # docker + rootless podman + libvirtd
     ../../modules/core/devpod.nix # dev-environment orchestration, drives podman
+    ../../modules/core/coder.nix # coder server: control plane for the golden-path templates exercise
     ../../modules/core/mise.nix # non-Nix toolchain manager, kept for portable skills
     ../../modules/core/nix-ld.nix # foreign-binary loader, for Orca and similar AppImages
     ../../modules/core/appimages.nix # binfmt registration so AppImages run by path
