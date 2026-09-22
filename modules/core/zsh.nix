@@ -169,9 +169,6 @@
             grep = "grep --color=always";
             pokemon = "pokego --random 1-8 --no-title";
 
-            # Pi coding agent
-            pia = "pi --provider openrouter --models \"openai/gpt-5.4,google/gemini-2.5-pro,x-ai/grok-4.6,deepseek/deepseek-v3.2,moonshotai/kimi-k2.6,qwen/qwen3-max\"";
-
             # Nixos
             list-gens = "nixos-rebuild list-generations";
             find-store-path = ''function { nix-shell -p $1 --command "nix eval -f \"<nixpkgs>\" --raw $1" }'';
