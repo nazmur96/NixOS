@@ -9,10 +9,15 @@
 # this machine reached emergency mode on 2026-09-22. Evaluation checks are a
 # floor, not a guarantee. See modules/core/assertions.nix.
 #
-# --no-build is deliberate. Assertions fire during evaluation, so the checks
-# that matter here run without building a single derivation. Building both
-# host closures on a free runner would take tens of minutes and add nothing
-# that is not already covered.
+# Do NOT add --no-build. modules/programs/cli/lazygit/default.nix uses
+# import-from-derivation: it builds a yaml-to-json derivation *during*
+# evaluation and reads the result. --no-build forbids that build, so
+# evaluation dies with
+#
+#   error: path '...-lazygit-yaml-to-attribute-set.drv' is not valid
+#
+# This passes locally regardless, because that output is already in the local
+# store -- it only fails on a cold machine, which is precisely what CI is.
 name: nix flake check
 
 on:
@@ -34,7 +39,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Nix
         uses: cachix/install-nix-action@v27
@@ -45,4 +50,4 @@ jobs:
       # Fails the run on any evaluation error, and on any assertion in
       # modules/core/assertions.nix.
       - name: nix flake check
-        run: nix flake check --no-build --show-trace
+        run: nix flake check --show-trace
