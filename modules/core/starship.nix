@@ -7,7 +7,7 @@
         settings = {
           add_newline = false;
           scan_timeout = 10;
-          format = "$username$hostname$directory$git_branch$git_state$git_status$cmd_duration$python$nix_shell$character";
+          format = "$username$hostname\${custom.mise}$directory$git_branch$git_state$git_status$cmd_duration$golang$python$nix_shell$character";
           directory = {
             truncate_to_repo = false;
             read_only = " ro";
@@ -92,6 +92,28 @@
             symbol = "nim ";
           };
 
+          # Shown when mise is providing tools for the current directory --
+          # i.e. there is a mise.toml and its tools are on PATH. mise has no
+          # "inside": it edits PATH per directory, so without this there is
+          # nothing to see and no way to tell it apart from a plain shell.
+          # The built-in `mise` module only looks in the CURRENT directory, so it
+          # vanished one level down in a project -- right exactly where you stop
+          # checking, which is worse than no badge at all.
+          #
+          # This walks up the tree the way mise itself does. Pure shell, no
+          # `mise` call, so it costs one small process per prompt rather than
+          # starting a Rust binary.
+          custom.mise = {
+            description = "Shown when a mise.toml applies here or in any parent";
+            when = "d=\"$PWD\"; while [ \"$d\" != \"/\" ]; do [ -f \"$d/mise.toml\" ] || [ -f \"$d/.mise.toml\" ] && exit 0; d=$(dirname \"$d\"); done; exit 1";
+            command = "true";
+            shell = [ "sh" "-c" ];
+            format = "[ mise ]($style) ";
+            style = "bg:purple fg:black bold";
+          };
+
+          # Shown when INSIDE a nix shell. Different symbol on purpose: nix
+          # shell is a subshell you exit; mise is per-directory and you do not.
           nix_shell = {
             symbol = "❄️ ";
             format = "[$symbol]($style)";
