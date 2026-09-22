@@ -1,0 +1,48 @@
+# Evaluates this flake on every push and pull request.
+#
+# What this catches: anything that fails evaluation. Syntax errors, missing
+# files or template paths, broken module options, and -- the reason it earns
+# its keep -- the assertions in modules/core/assertions.nix.
+#
+# What this does NOT catch: anything that only shows up at runtime. A config
+# can evaluate, build, activate and still fail to boot; that is exactly how
+# this machine reached emergency mode on 2026-09-22. Evaluation checks are a
+# floor, not a guarantee. See modules/core/assertions.nix.
+#
+# --no-build is deliberate. Assertions fire during evaluation, so the checks
+# that matter here run without building a single derivation. Building both
+# host closures on a free runner would take tens of minutes and add nothing
+# that is not already covered.
+name: nix flake check
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+# A newer push to the same branch makes an in-flight run irrelevant.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: evaluate flake
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      # Fails the run on any evaluation error, and on any assertion in
+      # modules/core/assertions.nix.
+      - name: nix flake check
+        run: nix flake check --no-build --show-trace
