@@ -149,6 +149,34 @@
               key = "ctrl+l";
               command = "workbench.action.chat.open";
             }
+            # New terminal tab in the CURRENT window's panel, not a floating
+            # window -- deliberate choice over terminal.newInNewWindow after
+            # trying that: a separate OS window per terminal felt like leaving
+            # the page, this stays in place like a browser "+" tab.
+            {
+              key = "ctrl+alt+t";
+              command = "workbench.action.terminal.new";
+            }
+            # For when a floating window IS actually wanted, e.g. dragging a
+            # terminal to a second monitor -- redockable, unlike a plain new
+            # window, by dragging its tab back onto the main window.
+            {
+              key = "ctrl+alt+shift+t";
+              command = "workbench.action.terminal.moveIntoNewWindow";
+            }
+            # New file, tab in the CURRENT window -- same reasoning as ctrl+alt+t
+            # above: stay on the same page, don't spawn a window.
+            {
+              key = "ctrl+alt+e";
+              command = "workbench.action.files.newUntitledFile";
+            }
+            # The actual float-out, for when it's wanted -- redockable by
+            # dragging its tab back onto the main window.
+            {
+              key = "ctrl+alt+shift+e";
+              command = "workbench.action.moveEditorToNewWindow";
+              when = "editorFocus";
+            }
           ];
           userSettings = {
             "update.mode" = "none";
@@ -157,6 +185,14 @@
             # Compact hamburger menu rather than a full menu bar -- closer to Cursor's
             # cleaner title bar. Revert to "classic" if you want the menus back.
             "window.menuBarVisibility" = "compact";
+            # 14in laptop screen: opening a file/folder from outside an already-open
+            # window (Finder, `code <path>`, a devpod launch) should pop a new OS
+            # window rather than hijack whatever window is already in front of you.
+            "window.openFilesInNewWindow" = "on";
+            "window.openFoldersInNewWindow" = "on";
+            # New windows open maximized instead of some small remembered size --
+            # matters on a small screen where a half-size new window is useless.
+            "window.newWindowDimensions" = "maximized";
             # "window.zoomLevel" = 0.5;
             "editor.fontSize" = 15;
             "workbench.colorTheme" = "Vesper";
@@ -225,6 +261,15 @@
 
             "editor.mouseWheelZoom" = true;
 
+            # Terminals as full editor-area tabs (horizontal strip, + button,
+            # ctrl+w closes) instead of the bottom panel's tiny side-list --
+            # same tab paradigm as the editor and as Orca's terminal.
+            "terminal.integrated.defaultLocation" = "editor";
+            # WebGL terminal renderer (the "auto" default) breaks in floating/new
+            # windows on some drivers -- glyphs partially render or blend into the
+            # background. Forcing the DOM renderer trades a little perf for
+            # correctness. https://github.com/microsoft/vscode/issues/163936
+            "terminal.integrated.gpuAcceleration" = "off";
             # Orca keeps long terminal history; VS Code defaults to 1000 lines.
             "terminal.integrated.scrollback" = 20000;
             "terminal.integrated.enablePersistentSessions" = true;
