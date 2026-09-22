@@ -26,6 +26,7 @@ in
     ../../modules/core/services.nix
     ../../modules/core/system.nix
     ../../modules/core/users.nix
+    ../../modules/core/assertions.nix # invariants that fail eval, CI included
     # ../../modules/core/syncthing.nix
     # ../../modules/core/jellyfin.nix
     # ../../modules/core/dlna.nix
