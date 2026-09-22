@@ -12,6 +12,12 @@ in
       enable = true;
       allowedTCPPorts = [ ];
       allowedUDPPorts = [ ];
+      # Local dev containers (Docker/Podman bridge) need to reach services
+      # bound on the host, e.g. `coder server --access-url http://172.17.0.1:3000`
+      # for a workspace agent to phone home. Without this the firewall silently
+      # drops all inbound traffic from docker0, and the agent hangs forever in
+      # "connecting" with no error on either side.
+      trustedInterfaces = [ "docker0" ];
     };
   };
 
