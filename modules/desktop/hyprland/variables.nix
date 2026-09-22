@@ -22,6 +22,7 @@ let
   waybar-toggle = pkgs.callPackage ./scripts/waybar-toggle.nix { };
   autoclicker = pkgs.callPackage ./scripts/autoclicker.nix { };
   batterynotify = pkgs.callPackage ./scripts/batterynotify.nix { };
+  battery-critical = pkgs.callPackage ./scripts/battery-critical.nix { };
   clipmanager = pkgs.callPackage ./scripts/clipmanager.nix { };
   fileManagerScript = pkgs.callPackage ./scripts/file-manager.nix { inherit terminal; };
   gamemode = pkgs.callPackage ./scripts/gamemode.nix { };
@@ -46,6 +47,7 @@ in
             -- Scripts
             autoclicker = "${getExe autoclicker}"
             batterynotify = "${getExe batterynotify}"
+            battery_critical = "${getExe battery-critical}"
             clipmanager = "${getExe clipmanager}"
             fileManagerScript = "${getExe fileManagerScript}"
             gamemode = "${getExe gamemode}"

@@ -28,7 +28,15 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("wl-paste --type text --watch cliphist store") -- clipboard store text data
 	hl.exec_cmd("wl-paste --type image --watch cliphist store") -- clipboard store image data
 	hl.exec_cmd("rm '$XDG_CACHE_HOME/cliphist/db'")
-	hl.exec_cmd(batterynotify)
+-- Low battery handling. The top bar is hidden by default here, so the
+-- defaults (notify only, at 20/10%) were not enough -- and until
+-- modules/core/upower.nix enabled the UPower daemon this script died on
+-- startup anyway, silently, which is why the laptop used to just power off.
+--   --low 15       notify, nothing forced
+--   --critical 7   start the short countdown
+--   --timer 5      keep it brief; the real 60s grace lives in battery_critical
+--   --execute      lock the screen, then suspend if still unplugged
+hl.exec_cmd(batterynotify .. " --low 15 --critical 7 --timer 5 --execute '" .. battery_critical .. "'")
 	hl.exec_cmd("polkit-agent-helper-1")
 end)
 
