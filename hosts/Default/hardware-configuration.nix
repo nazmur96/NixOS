@@ -25,18 +25,6 @@
       options = [ "subvol=@nix" ];
     };
 
-  fileSystems."/var/log" =
-    { device = "/dev/disk/by-label/nixos";
-      fsType = "btrfs";
-      options = [ "subvol=@log" ];
-    };
-
-  fileSystems."/.snapshots" =
-    { device = "/dev/disk/by-label/nixos";
-      fsType = "btrfs";
-      options = [ "subvol=@snapshots" ];
-    };
-
   fileSystems."/home" =
     { device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
@@ -47,6 +35,18 @@
     { device = "/dev/disk/by-uuid/BFBE-7497";
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
+    };
+
+  fileSystems."/.snapshots" =
+    { device = "/dev/disk/by-label/nixos";
+      fsType = "btrfs";
+      options = [ "subvol=@snapshots" ];
+    };
+
+  fileSystems."/var/log" =
+    { device = "/dev/disk/by-label/nixos";
+      fsType = "btrfs";
+      options = [ "subvol=@log" ];
     };
 
   swapDevices = [ ];
