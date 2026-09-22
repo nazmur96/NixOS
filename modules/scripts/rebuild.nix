@@ -23,7 +23,7 @@ pkgs.writeShellScriptBin "rebuild" ''
   currentUser=$(logname)
 
   # replace username variable in variables.nix with $USER
-  sudo sed -i -e "s/username = \".*\"/username = \"$currentUser\"/" "$flake/hosts/${host}/variables.nix"
+  sed -i -e "s/username = \".*\"/username = \"$currentUser\"/" "$flake/hosts/${host}/variables.nix"
 
   # Regenerate hardware-configuration.nix into a TEMP file and vet it before
   # installing it.
@@ -63,9 +63,9 @@ pkgs.writeShellScriptBin "rebuild" ''
     exit 1
   fi
 
-  sudo cp "$hwTmp" "$flake/hosts/${host}/hardware-configuration.nix"
+  cp "$hwTmp" "$flake/hosts/${host}/hardware-configuration.nix"
 
-  sudo git -C "$flake" add hosts/${host}/hardware-configuration.nix
+  git -C "$flake" add hosts/${host}/hardware-configuration.nix
 
   # nh os switch --hostname "${host}"
   sudo nixos-rebuild switch --flake "$flake#${host}"
