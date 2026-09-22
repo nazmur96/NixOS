@@ -37,6 +37,7 @@ in
     ../../modules/core/mise.nix # non-Nix toolchain manager, kept for portable skills
     ../../modules/core/nix-ld.nix # foreign-binary loader, for Orca and similar AppImages
     ../../modules/core/appimages.nix # binfmt registration so AppImages run by path
+    ../../modules/core/upower.nix # battery daemon; batterynotify dies without it, plus a 3% failsafe
     ../../modules/core/ollama.nix # loopback-only, not exposed off the machine
     ../../modules/core/claude-code.nix
 
