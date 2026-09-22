@@ -17,7 +17,11 @@
   browser = "zen-beta"; # zen-beta, firefox, floorp
   fileManager = "yazi"; # yazi, lf, thunar
   shell = "zsh"; # bash, zsh
-  games = true; # Enable/Disable gaming module
+
+  # The gaming MODULE was dropped in 2648af8 and modules/core/games.nix no
+  # longer exists. This flag survives because modules/desktop/plasma6 still
+  # inherits it to gate a Lutris shortcut -- removing it breaks plasma6.
+  games = false;
 
   # Hardware
   hostname = "Singularity";
