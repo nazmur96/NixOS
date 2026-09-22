@@ -155,3 +155,20 @@ hl.gesture({
 	direction = "horizontal",
 	action = "workspace",
 })
+
+-- The global input.force_no_accel/sensitivity above is tuned for an external
+-- mouse (raw, unaccelerated aim). Applied to the built-in touchpad/trackpoint
+-- it bypasses libinput's adaptive accel curve those devices actually need,
+-- which is what made the pointer feel inconsistent/too fast under a finger.
+-- Restore normal adaptive acceleration for just these two devices.
+hl.device({
+	name = "synps/2-synaptics-touchpad",
+	sensitivity = 0,
+	accel_profile = "adaptive",
+})
+
+hl.device({
+	name = "tpps/2-elan-trackpoint",
+	sensitivity = 0,
+	accel_profile = "adaptive",
+})
