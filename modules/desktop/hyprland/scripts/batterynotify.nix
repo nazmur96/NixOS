@@ -48,7 +48,7 @@ pkgs.writeShellScriptBin "batterynotify" ''
 
   fn_percentage () {
     if [[ "$battery_percentage" -ge "$unplug_charger_threshold" ]] && [[ "$battery_status" != "Discharging" ]] && [[ "$battery_status" != "Full" ]] && (( (battery_percentage - last_notified_percentage) >= $interval )); then
-      fn_notify "-t 5000 " "CRITICAL" "Battery Charged" "Battery is at $battery_percentage%. You can unplug the charger!"
+      fn_notify "-t 5000 -r 70 " "CRITICAL" "Battery Charged" "Battery is at $battery_percentage%. You can unplug the charger!"
       last_notified_percentage=$battery_percentage
     elif [[ "$battery_percentage" -le "$battery_critical_threshold" ]]; then
       count=$(( timer > $mnt ? timer : $mnt ))
@@ -61,7 +61,7 @@ pkgs.writeShellScriptBin "batterynotify" ''
       done
       [ $count -eq 0 ] && fn_action
     elif [[ "$battery_percentage" -le "$battery_low_threshold" ]] && [[ "$battery_status" == "Discharging" ]] && (( (last_notified_percentage - battery_percentage) >= $interval )); then
-      fn_notify "-t 5000 " "CRITICAL" "Battery Low" "Battery is at $battery_percentage%. Connect the charger."
+      fn_notify "-t 5000 -r 71 " "CRITICAL" "Battery Low" "Battery is at $battery_percentage%. Connect the charger."
       last_notified_percentage=$battery_percentage
     fi
   }

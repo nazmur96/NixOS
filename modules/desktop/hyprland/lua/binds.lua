@@ -91,7 +91,11 @@ hl.bind(mainMod .. " + ALT + K", hl.dsp.exec_cmd(keyboardswitch)) -- change keyb
 hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center audio || pavucontrol")) -- audio panel
 hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center media")) -- media panel
 hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("swaync-client -t -sw")) -- swayNC panel
-hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd("swaync-client -t -sw")) -- swayNC panel
+-- Was a second, identical binding for the swayNC panel. Dismissing a pile of
+-- notifications one click at a time is miserable -- the low-battery countdown
+-- alone can leave dozens -- so the duplicate earns its keep as "clear them
+-- all" instead. N opens the panel, Q empties it.
+hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd("swaync-client -C")) -- dismiss ALL notifications
 hl.bind(mainMod .. " + ALT + G", hl.dsp.exec_cmd(gamemode)) -- disable hypr effects for gamemode
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd(clipmanager)) -- Clipboard Manager
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(rofimusic)) -- online music
