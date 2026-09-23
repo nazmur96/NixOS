@@ -32,11 +32,21 @@ hl.on("hyprland.start", function()
 -- defaults (notify only, at 20/10%) were not enough -- and until
 -- modules/core/upower.nix enabled the UPower daemon this script died on
 -- startup anyway, silently, which is why the laptop used to just power off.
---   --low 15       notify, nothing forced
---   --critical 7   start the short countdown
---   --timer 5      keep it brief; the real 60s grace lives in battery_critical
+-- batterynotify VALIDATES these and exits 1 on the first out-of-range value,
+-- silently as far as the desktop is concerned. Its accepted ranges are:
+--   --low       20-80   (NOT 5-80; it validates against mnl..mnu)
+--   --critical  5-80
+--   --timer     60-1000 (seconds; 60 is the floor, shorter is impossible)
+-- A previous version passed --low 15 --timer 5. Both are out of range, so the
+-- script died on startup every boot and the laptop ran to 3% with no warning
+-- at all. Changing a number here without checking the ranges above will
+-- silently disable low-battery warning entirely -- verify by running the
+-- command and confirming the process stays alive.
+--
+--   --low 20       notify, nothing forced
+--   --critical 7   begin the 60s countdown, cancelled by plugging in
 --   --execute      lock the screen, then suspend if still unplugged
-hl.exec_cmd(batterynotify .. " --low 15 --critical 7 --timer 5 --execute '" .. battery_critical .. "'")
+hl.exec_cmd(batterynotify .. " --low 20 --critical 7 --timer 60 --execute '" .. battery_critical .. "'")
 	hl.exec_cmd("polkit-agent-helper-1")
 end)
 

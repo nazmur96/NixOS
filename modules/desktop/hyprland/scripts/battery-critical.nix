@@ -13,7 +13,11 @@
 pkgs.writeShellScriptBin "battery-critical" ''
   set -uo pipefail
 
-  GRACE=''${BATTERY_CRITICAL_GRACE:-60}   # seconds to plug in before suspend
+  # 30s, not 60: batterynotify cannot count down for less than 60 seconds
+  # (its --timer floor), and it runs that countdown BEFORE invoking this. A
+  # 60s grace here would put suspend 120s after the critical threshold, which
+  # is a long time to keep draining a battery that is already at 7%.
+  GRACE=''${BATTERY_CRITICAL_GRACE:-30}   # seconds to plug in before suspend
   DRY=''${BATTERY_CRITICAL_DRY_RUN:-0}    # 1 = log only, do not lock/suspend
 
   log() { echo "[battery-critical] $*" >&2; }
