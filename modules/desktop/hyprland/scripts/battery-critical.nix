@@ -9,6 +9,13 @@
 # Plugging in cancels the SUSPEND. It deliberately does not unlock the
 # screen -- auto-unlocking would mean anyone with physical access could
 # bypass the lock screen by plugging in a charger. Type the password.
+#
+# Verified end to end on real hardware on 2026-09-23, draining from 13% to
+# the threshold: the countdown notification rewrote itself in place for 60s,
+# hyprlock launched from the detached process, and suspend followed. Up to
+# that point only the logic had been proven, against a fake power supply --
+# and the run before it failed outright because the arguments in
+# lua/settings.lua were out of batterynotify's accepted range.
 { pkgs, ... }:
 pkgs.writeShellScriptBin "battery-critical" ''
   set -uo pipefail
