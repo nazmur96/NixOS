@@ -26,13 +26,17 @@
         # Same two-step dance as vscodeUnpinSettings/vscodeMutableSettings:
         # home-manager won't link over last rebuild's plain-file copy, so it
         # goes first; after linking, the symlink becomes a writable copy.
+        # The copy step must name linkGeneration explicitly: "after
+        # writeBoundary" alone lets the DAG break the tie by name, and
+        # "cursor..." sorts before "linkGeneration", so it would run before
+        # the link exists. (vscodeMutableSettings only works by sorting later.)
         home.activation = {
           cursorUnpinMcp = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
             p="$HOME/.cursor/mcp.json"
             [ -f "$p" ] && [ ! -L "$p" ] && rm -f "$p"
             true
           '';
-          cursorMutableMcp = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          cursorMutableMcp = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
             p="$HOME/.cursor/mcp.json"
             if [ -L "$p" ]; then
               t="$(readlink -f "$p")"
