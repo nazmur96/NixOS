@@ -48,6 +48,7 @@ in
     ../../modules/programs/browser/${vars.browser}
     ../../modules/programs/terminal/${vars.terminal}
     ../../modules/programs/editor/${vars.editor} # terminal editor; also sets $EDITOR (see modules/core/users.nix)
+    ../../modules/programs/editor/cursor # Cursor's declared MCP servers (package is in host-packages.nix)
     ../../modules/programs/editor/vscode # GUI editor. Imported explicitly, NOT via vars.editor, because
     # setting vars.editor = "vscode" would make $EDITOR="code" -- and `code`
     # returns immediately without --wait, so git would see an empty commit
