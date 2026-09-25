@@ -41,6 +41,13 @@
     # source or self-registered updater. Beta access needs Cursor Ultra /
     # Teams Premium / SuperGrok Heavy -- the app installs regardless.
     grok-bot
+    # OpenSpec -- spec-driven development for AI agents (proposal/specs/
+    # design/tasks per change, under openspec/ in each repo). Host layer for
+    # the same reason as cursor-cli: it drives agents across every repo, it
+    # is not one project's dependency. Per-repo setup is
+    # `openspec init --tools claude,cursor`, committed with the repo.
+    # Upgrade via a nixpkgs bump, not `npm install -g`, which would shadow it.
+    openspec
     # obsidian
     # ludusavi
     # godot
@@ -48,4 +55,9 @@
     # github-desktop
     # pokego # Overlayed
   ];
+
+  # OpenSpec phones home with command names and version by default. The env
+  # var overrides its global config, so this stays off even if something
+  # runs `openspec config set telemetry.enabled true`.
+  environment.variables.OPENSPEC_TELEMETRY = "0";
 }
