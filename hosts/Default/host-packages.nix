@@ -35,6 +35,12 @@
     #
     # Pinned to the 2026-08-11 snapshot by our nixpkgs lock, not by upstream.
     cursor-cli
+    # Grok Bot -- SpaceXAI/Cursor's desktop agent. Not in nixpkgs; repacked
+    # from the vendor .deb in pkgs/grok-bot.nix (overlayed). Installed this
+    # way rather than the .deb so it has one store-managed copy and no apt
+    # source or self-registered updater. Beta access needs Cursor Ultra /
+    # Teams Premium / SuperGrok Heavy -- the app installs regardless.
+    grok-bot
     # obsidian
     # ludusavi
     # godot
